@@ -33,22 +33,21 @@ export const jogodavelha = async ({ ctx, botTelegram }) => {
     ["ㅤㅤ", "ㅤㅤ", "ㅤㅤ"],
   ];
 
-  let botposRow = Math.floor(Math.random() * 4);
-  let botposColumn = Math.floor(Math.random() * 4);
-
   function generatePosBot() {
-    botposRow = Math.floor(Math.random() * 4);
-    botposColumn = Math.floor(Math.random() * 4);
-  }
+    const botposRow = Math.floor(Math.random() * 3);
+    const botposColumn = Math.floor(Math.random() * 3);
+    console.log(botposRow, botposColumn);
+    if (grid[botposRow][botposColumn] == "❌") {
+      generatePosBot();
+      return;
+    }
 
-  grid[botposRow][botposColumn] == "❌"
-    ? generatePosBot
-    : grid[botposRow][botposColumn] == "🔵";
+    grid[botposRow][botposColumn] = "🔵";
+  }
 
   ctx.reply("Você quer jogar? Então vamos.");
 
   ctx.reply("Começe!");
-  ctx.reply(JSON.stringify(grid));
 
   botTelegram.on("text", (ctx) => {
     const pos = ctx.message.text.split(" ");
@@ -65,7 +64,13 @@ export const jogodavelha = async ({ ctx, botTelegram }) => {
       return;
     }
 
+    if (grid[pos[0] - 1][pos[1] - 1] == "🔵") {
+      ctx.reply("Posição inválida ❌");
+      return;
+    }
+
     grid[pos[0] - 1][pos[1] - 1] = "❌";
+    generatePosBot();
 
     if (
       (grid[0][0] == "❌" && grid[0][1] == "❌" && grid[0][2] == "❌") ||
@@ -89,8 +94,8 @@ export const jogodavelha = async ({ ctx, botTelegram }) => {
     ) {
       ctx.reply("Parabéns você ganhou!");
     }
-    ctx.reply(JSON.stringify(grid).replaceAll("],", "]\n").replaceAll('"', ""));
 
+    ctx.reply(JSON.stringify(grid).replaceAll("],", "]\n").replaceAll('"', ""));
     console.log(grid);
   });
 };
