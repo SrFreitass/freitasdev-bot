@@ -1,6 +1,6 @@
 import puppeteer from "puppeteer";
 import { Telegraf } from "telegraf";
-import { botTelegram } from "../bot/index.js";
+import { botTelegram } from "../index.js";
 
 import "dotenv/config";
 
@@ -43,11 +43,13 @@ export const newPage = async (browser, message) => {
     );
   });
 
-  items.slice(0, 10).forEach((product, index) => {
+  const itemsFiltered = items.slice(0, 10);
+
+  itemsFiltered.forEach((product, index) => {
     search += `\n 🛒${index + 1} ${product.title} \n 💸${
       product.price
     }  \n ⭐ ${product.stars}\n`;
   });
 
-  return search;
+  return { search, itemsFiltered };
 };
